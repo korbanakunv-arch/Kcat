@@ -1,221 +1,494 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#191424">
-<title>KCAT</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Kcat</title>
 <style>
-:root{--bg:#171321;--pink:#f329a5;--purple:#a64cf3;--cyan:#16d7eb;--muted:#b9aecb;--btn:#322641;--btn-border:#645173}
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
-body{background:radial-gradient(ellipse at 10% 0%,#392143,transparent 45%),var(--bg);color:#fff;min-height:100vh}
-.container{max-width:480px;margin:0 auto;padding:20px}
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center}
-h1{font-size:36px;font-style:italic;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
-p{color:var(--muted);margin-bottom:20px}
-.spinner{width:45px;height:45px;border:3px solid #ffffff15;border-top:3px solid var(--pink);border-radius:50%;animation:putar 1s linear infinite;margin-bottom:20px}
-@keyframes putar{to{transform:rotate(360deg)}}
-.btn{padding:12px 24px;border-radius:12px;border:none;font-size:15px;font-weight:600;cursor:pointer}
-.btn-pink{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;width:100%}
-.btn-pink:active{transform:scale(.97)}
-.box{background:#241b35;border:2px solid #09070f;box-shadow:3px 3px 0 #000;border-radius:16px;padding:25px;margin-bottom:15px}
-input{width:100%;padding:12px;background:#0d0a13;border:1px solid #514361;border-radius:10px;color:#fff;margin:8px 0 16px}
-label{font-size:14px;color:var(--muted)}
-.error{background:rgba(255,80,120,.1);border:1px solid rgba(255,140,180,.4);border-radius:10px;padding:15px;margin:15px 0;color:#ffb6c6}
-.success{background:rgba(50,209,131,.1);border:1px solid rgba(50,209,131,.4);border-radius:10px;padding:15px;margin:15px 0;color:#92f8c8}
-.hidden{display:none!important}
-a{color:var(--cyan);text-decoration:none}
-.tabs{display:flex;gap:8px;margin:15px 0}
-.tab{flex:1;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer}
-.tab.active{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff}
+:root{
+  color-scheme:dark;
+  --bg:#171321;
+  --pink:#f329a5;
+  --purple:#a64cf3;
+  --cyan:#16d7eb;
+  --green:#32d583;
+  --muted:#b9aecb;
+  --btn-bg:#322641;
+  --btn-border:#645173;
+  --app-bg-img:none;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--app-bg-img), radial-gradient(ellipse at 10% 0%,#392143,transparent 45%),var(--bg);
+  background-size:cover;
+  background-attachment:fixed;
+  color:#fff;
+  font:15px system-ui,-apple-system,Segoe UI,sans-serif
+}
+.app{max-width:760px;margin:auto;min-height:100dvh;display:flex;flex-direction:column}
+.hd{padding:14px;position:sticky;top:0;background:#1b1628f5;z-index:5;border-bottom:1px solid #ffffff12;display:flex;flex-direction:column;gap:8px}
+.hd-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.brand{font-size:26px;font-weight:900;font-style:italic;text-shadow:2px 2px 0 var(--pink)}
+.sub{color:var(--muted);font-size:12px}
+.row{display:flex;gap:8px;align-items:center}.grow{flex:1;min-width:0}.hidden{display:none!important}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;color:#fff;border:1px solid var(--btn-border);border-radius:12px;padding:10px 12px;background:var(--btn-bg);transition:transform .12s, background .25s}
+button:active{transform:scale(.95)}
+button.primary{border:0;background:linear-gradient(135deg,var(--pink),var(--purple));font-weight:800}
+button.danger{border-color:#a43d64;color:#ff9ab9}
+input,textarea,select{width:100%;background:#0d0a13;border:1px solid #514361;color:#fff;border-radius:12px;padding:12px;outline-color:var(--cyan)}
+label{display:block;color:var(--muted);font-size:12px;margin:12px 0 6px}
+#q{margin-top:4px;border:2px solid #09070f;box-shadow:3px 3px 0 #000}
+.tabs{display:flex;gap:6px;margin-top:6px;background:#0d0a13;border:2px solid #09070f;border-radius:16px;padding:6px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:0 0 auto;min-width:64px;white-space:nowrap;position:relative;padding:8px 10px;font-size:12px;border:0;background:none;color:var(--muted)}
+.tabs button span{display:block;font-size:17px}.tabs button.active{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-weight:800;border-radius:10px}
+.tabs b{position:absolute;top:0;right:2px;background:var(--cyan);color:#000;font-size:10px;border-radius:9px;padding:1px 5px}.tabs b:empty{display:none}
+.status{font-size:12px;margin-top:8px}.good{color:var(--green)}.bad{color:#ff8eb7}
+main{padding:14px;flex:1}.list{display:flex;flex-direction:column;gap:9px}
+.card,.item{background:#241b35e6;border:2px solid #09070f;box-shadow:3px 3px 0 #000;border-radius:16px}.pn{padding:14px;margin-bottom:12px}
+.item{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:12px;color:#fff}.item small{display:block;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--pink),var(--purple));font-weight:900;flex-shrink:0;object-fit:cover;border:2px solid #09070f}
+.av.sm{width:36px;height:36px}.av.big{width:96px;height:96px;font-size:36px}.av.ring{border:3px solid var(--cyan)}
+.rh{margin-bottom:8px;position:sticky;top:0;background:#171321f5;padding:6px 0;z-index:3}
+.messages{display:flex;flex-direction:column;gap:7px;min-height:50vh;padding:10px 0}
+.msg{max-width:84%;align-self:flex-start;background:#382d48;padding:8px 11px;border-radius:14px;overflow-wrap:anywhere;white-space:pre-wrap}
+.msg.mine{align-self:flex-end;background:linear-gradient(135deg,#963ee0,#d92b9b)}.msg small{display:block;opacity:.7;font-size:10px;margin-top:3px}.msg strong{font-size:12px;color:var(--cyan)}
+.pic{max-width:100%;max-height:260px;border-radius:10px;display:block;margin:4px 0}
+.compose{display:flex;gap:6px;position:sticky;bottom:0;background:#171321f5;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}.compose textarea{resize:none;min-height:44px;max-height:110px}
+#ov{position:fixed;inset:0;z-index:20}#ov.ovm{background:#000a;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#241b35;border-radius:20px 20px 0 0;padding:16px;width:100%;max-width:760px;max-height:88dvh;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.by{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:8px;border:1px solid #09070f}
+.credit{text-align:center;color:#9f94b1;font-size:12px;margin-top:14px}.credit b{color:var(--pink)}
+#dock{position:fixed;right:10px;bottom:84px;z-index:15;background:#241b35;border:2px solid #09070f;box-shadow:3px 3px 0 #000;border-radius:14px;padding:8px;max-width:240px}#dock .row button{padding:4px 8px}#dt{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.about a{color:var(--cyan)}
+.sub-nav{display:flex;gap:8px;margin-bottom:12px}.sub-nav button{flex:1;padding:8px}
+/* Color styles */
+.name-gamer{background:linear-gradient(90deg,red,blue,green);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:rainbow 3s infinite linear;font-weight:bold}
+.name-hunter{background:linear-gradient(90deg,#ffd700,#fff8dc,#ffa500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:bold;text-shadow:0 0 5px rgba(255,215,0,0.8)}
+.name-redmoon{color:#8b0000;text-shadow:0 0 6px #ff0000;font-weight:bold}
+@keyframes rainbow{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+#toast{position:fixed;top:10px;left:10px;right:10px;max-width:740px;margin:auto;z-index:30;background:linear-gradient(135deg,var(--pink),var(--purple));padding:12px 14px;border-radius:14px;font-weight:700;box-shadow:3px 3px 0 #000;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
-<div class="container">
-  <!-- LAYAR LOADING -->
-  <div id="layar-muat" class="loading">
-    <div class="spinner"></div>
-    <h1>KCAT</h1>
-    <p id="status">Menghubungkan ke Firebase…</p>
-    <div id="pesan-error" class="error hidden">
-      <strong>⚠️ Gagal terhubung</strong>
-      <p id="teks-error"></p>
-      <button class="btn btn-pink" onclick="location.reload()" style="margin-top:10px">🔄 Coba Lagi</button>
-    </div>
-  </div>
+<script nomodule>document.addEventListener('DOMContentLoaded',function(){document.getElementById('main').innerHTML='<section class="card pn"><h2>Browser tidak didukung</h2><p>Buka Kcat di Chrome versi terbaru.</p></section>'})</script>
 
-  <!-- LAYAR UTAMA -->
-  <div id="layar-utama" class="hidden">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <h1 style="font-size:26px">KCAT</h1>
-      <span style="font-size:11px;color:var(--muted)">@Bus · @Bob</span>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="bukaTab('auth')">🔑 Akun</button>
-      <button class="tab" onclick="bukaTab('about')">ℹ️ Tentang</button>
-      <button class="tab" onclick="bukaTab('donate')">💝 Donate</button>
-    </div>
-
-    <!-- TAB LOGIN/DAFTAR -->
-    <div id="tab-auth">
-      <div class="box">
-        <h3 id="judul-form">Masuk ke KCAT</h3>
-        <p style="margin:5px 0 20px;font-size:14px">Masukkan email & kata sandi</p>
-        
-        <div id="form-login">
-          <label>Email</label>
-          <input type="email" id="email" placeholder="email@contoh.com">
-          <label>Kata Sandi</label>
-          <input type="password" id="sandi" placeholder="Minimal 6 karakter">
-          <button class="btn btn-pink" onclick="masuk()">🔑 Masuk</button>
-          <p style="text-align:center;margin-top:15px">Belum punya akun? <a href="#" onclick="gantiForm('daftar')">Daftar</a></p>
-        </div>
-
-        <div id="form-daftar" class="hidden">
-          <label>Nama Lengkap</label>
-          <input type="text" id="nama" placeholder="Nama kamu">
-          <label>Email</label>
-          <input type="email" id="email-daftar" placeholder="email@contoh.com">
-          <label>Kata Sandi</label>
-          <input type="password" id="sandi-daftar" placeholder="Minimal 6 karakter">
-          <button class="btn btn-pink" onclick="daftar()">✨ Daftar</button>
-          <p style="text-align:center;margin-top:15px">Sudah punya akun? <a href="#" onclick="gantiForm('login')">Masuk</a></p>
-        </div>
+<div class="app">
+  <header class="hd hidden" id="hd">
+    <div class="hd-top">
+      <button id="btn-settings" style="padding:6px 10px;font-size:18px">⋮</button>
+      <div class="grow" style="text-align:center">
+        <div class="brand">KCAT 😎</div>
+        <div class="sub"><span class="by">@Bus</span> <span class="by">@Bob</span></div>
       </div>
+      <div style="width:36px"></div>
     </div>
-
-    <!-- TAB TENTANG -->
-    <div id="tab-about" class="hidden">
-      <div class="box">
-        <h3>ℹ️ Tentang KCAT</h3>
-        <p style="line-height:1.7;margin:15px 0">
-          KCAT adalah sebuah platform Website atau Aplikasi Chatting inovatif yang dirancang secara mandiri oleh kreator dengan username @busana. Platform ini dibangun khusus sebagai ruang komunikasi digital yang dinamis, fleksibel, dan disesuaikan dengan kebutuhan komunitas atau pengguna targetnya.
-        </p>
-        <p style="font-weight:600">KCAT Inc. - Update V2</p>
-        <button style="width:100%;margin-top:20px;background:rgba(50,209,131,.2);border:1px solid rgba(50,209,131,.3);color:#32d583;opacity:.75" class="btn" onclick="alert('🔓 Selamat datang di Secret Room! 🤫')">🔓 Secret Room</button>
-      </div>
-    </div>
-
-    <!-- TAB DONATE -->
-    <div id="tab-donate" class="hidden">
-      <div class="box">
-        <h3>💝 DONATE</h3>
-        <div style="background:#1b1628;border-radius:10px;padding:15px;margin:15px 0">
-          <h4>Busana</h4>
-          <p style="font-size:14px;color:#ccc;margin:8px 0">Untuk Support Website Mandiri ini boleh kali untuk Donasi Seikhlasnya ✌️😁</p>
-          <a href="https://sociabuzz.com/busanacihuy/donate" target="_blank" style="color:var(--cyan)">🔗 sociabuzz.com/busanacihuy/donate</a>
-        </div>
-        <div style="background:#1b1628;border-radius:10px;padding:15px;margin:15px 0">
-          <h4>Bob</h4>
-          <p style="font-size:14px;color:#ccc;margin:8px 0">Donate robux saja, akun roblox = <strong>asbunology</strong> untuk support saya untuk game saya 🤭</p>
-          <p style="font-size:14px;color:#ccc">Terima kasih banyak! 😊</p>
-        </div>
-      </div>
-    </div>
-  </div>
+    <input id="q" placeholder="Cari chat, kontak, pesan…">
+    <nav class="tabs" id="tabs">
+      <button data-tab="about"><span>ℹ️</span>About us<b></b></button>
+      <button data-tab="chats"><span>💬</span>Chat<b></b></button>
+      <button data-tab="status"><span>◎</span>Status<b></b></button>
+      <button data-tab="groups"><span>👥</span>Grup<b></b></button>
+      <button data-tab="contacts"><span>📇</span>Kontak<b></b></button>
+      <button data-tab="account"><span>🙂</span>Akun<b></b></button>
+      <button data-tab="music"><span>🎵</span>Music<b></b></button>
+    </nav>
+  </header>
+  
+  <div id="conn" class="status" style="padding:0 14px">Memuat Firebase…</div>
+  <main id="main"></main>
 </div>
 
-<script>
-// === FIREBASE CONFIG — SUDAH BENAR DARI DALAM ===
-const firebaseConfig={
-  apiKey:"AIzaSyCBMmtEoOqy_HQ4IxXB8jxivT86IRDqC0",
-  authDomain:"kcat-10a8f.firebaseapp.com",
-  projectId:"kcat-10a8f",
-  storageBucket:"kcat-10a8f.firebasestorage.app",
-  messagingSenderId:"357416876079",
-  appId:"1:357416876079:web:8a810955a0ba45623d6eda"
-};
+<div id="dock" class="hidden">
+  <div class="row">
+    <span id="dt" class="grow">♪</span>
+    <button id="dp">⏯</button>
+    <button id="dn">⏭</button>
+    <button id="dx">✕</button>
+  </div>
+  <div id="dyt"></div>
+</div>
 
-// === FUNGSI BANTUAN ===
-function status(text){document.getElementById('status').textContent=text}
-function tampilError(pesan){
-  document.getElementById('pesan-error').classList.remove('hidden');
-  document.getElementById('teks-error').textContent=pesan;
-  document.querySelector('.spinner').style.display='none';
-}
-function bukaAplikasi(){
-  document.getElementById('layar-muat').classList.add('hidden');
-  document.getElementById('layar-utama').classList.remove('hidden');
-}
-function gantiForm(jenis){
-  if(jenis==='daftar'){
-    document.getElementById('form-login').classList.add('hidden');
-    document.getElementById('form-daftar').classList.remove('hidden');
-    document.getElementById('judul-form').textContent='Buat Akun Baru';
-  }else{
-    document.getElementById('form-daftar').classList.add('hidden');
-    document.getElementById('form-login').classList.remove('hidden');
-    document.getElementById('judul-form').textContent='Masuk ke KCAT';
-  }
-}
-function bukaTab(nama){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  event.target.classList.add('active');
-  document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));
-  document.getElementById('tab-'+nama).classList.remove('hidden');
+<audio id="bgm" preload="none"></audio>
+<audio id="sfx-secret" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="none"></audio>
+<div id="toast" class="hidden"></div>
+<div id="ov" class="hidden"></div>
+
+<script type="module">
+const sdkSets=[
+  ['https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js','https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js','https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js'],
+  ['https://cdn.jsdelivr.net/npm/firebase@11.10.0/app/+esm','https://cdn.jsdelivr.net/npm/firebase@11.10.0/auth/+esm','https://cdn.jsdelivr.net/npm/firebase@11.10.0/firestore/+esm']
+];
+let SDK=null,sdkErr=null;
+for(const set of sdkSets){try{SDK=await Promise.all(set.map(u=>import(u)));break}catch(e){sdkErr=e}}
+if(!SDK){document.getElementById('main').innerHTML='<section class="card pn"><h2>Gagal memuat Firebase</h2><p class="sub bad">'+String(sdkErr&&sdkErr.message||sdkErr)+'</p></section>';throw sdkErr}
+
+const {initializeApp,getApps}=SDK[0],
+      {getAuth,initializeAuth,indexedDBLocalPersistence,browserLocalPersistence,browserSessionPersistence,inMemoryPersistence,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile}=SDK[1],
+      {getFirestore,initializeFirestore,enableNetwork,doc,setDoc,getDoc,collection,addDoc,getDocs,query,where,orderBy,onSnapshot,serverTimestamp,deleteDoc,updateDoc,arrayUnion,arrayRemove,limit}=SDK[2];
+
+window.__kcatLoaded=true;
+const defaultConfig={apiKey:'AIzaSyCBMmtEoOqy_HQ4QIxXB8jxivT86IRDqC0',authDomain:'kcat-10a8f.firebaseapp.com',projectId:'kcat-10a8f',storageBucket:'kcat-10a8f.firebasestorage.app',messagingSenderId:'357416876079',appId:'1:357416876079:web:8a810955a0ba45623d6eda'};
+
+const $=s=>document.querySelector(s),main=$('#main'),hd=$('#hd'),ov=$('#ov');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let auth,db,me=null,tab='about',aboutSubTab='info',active=null,rooms=[],stats=[],unsubs=[],msgUnsub=null,q='',pend='',U=new Map(),asked=new Set(),seen={},primed=false;
+let pl=[],pi=-1;
+
+try{seen=JSON.parse(localStorage.getItem('kseen')||'{}')}catch(_){}
+try{pl=JSON.parse(localStorage.getItem('kmusic')||'[]')}catch(_){}
+
+const C=()=>new Set(me?.contacts||[]),B=()=>new Set(me?.blockedUids||[]);
+const ms=t=>t&&t.toMillis?t.toMillis():(typeof t==='number'?t:Date.now());
+const T=t=>new Date(ms(t)).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+const st=(s,ok)=>{const c=$('#conn');if(c){c.textContent=s;c.className='status '+(ok?'good':'bad')}};
+
+function getColoredNameHTML(name, colorCode){
+  const safeName = esc(name);
+  if(!colorCode) return safeName;
+  if(colorCode==='#gamer_123') return `<span class="name-gamer">${safeName}</span>`;
+  if(colorCode==='#BusanaTheHunter') return `<span class="name-hunter">${safeName}</span>`;
+  if(colorCode==='#theredfullmoon') return `<span class="name-redmoon">${safeName}</span>`;
+  if(colorCode==='#OGmember') return `<span style="color:#87ceeb;font-weight:bold">${safeName}</span>`;
+  if(colorCode==='#trooll') return `<span style="color:#555555;font-weight:bold">${safeName}</span>`;
+  return `<span style="color:${esc(colorCode)}">${safeName}</span>`;
 }
 
-// === MUAT FIREBASE ===
-async function muatFirebase(){
-  status('Memuat pustaka Firebase…');
-  
+const av=(u,c='')=>u&&u.photo?`<img class="av ${c}" src="${esc(u.photo)}">`:`<span class="av ${c}">${esc(((u&&u.name)||'?')[0].toUpperCase())}</span>`;
+
+function modal(h){ov.className='ovm';ov.innerHTML=`<div class="sheet">${h}<button id="mc">Tutup</button></div>`;$('#mc').onclick=closeOv;ov.onclick=e=>{if(e.target===ov)closeOv()}}
+function closeOv(){ov.className='hidden';ov.innerHTML=''}
+
+function init(){
   try{
-    await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js');
-    await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js');
-    await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
-    
-    const app=firebase.initializeApp(firebaseConfig);
-    status('✅ Terhubung ke Firebase!');
-    
-    setTimeout(bukaAplikasi,600);
-  }catch(err){
-    tampilError('Tidak bisa terhubung. Cek internet lalu coba lagi. ('+err.message+')');
-  }
-}
+    const a=getApps().find(x=>x.name==='kcat')||initializeApp(defaultConfig,'kcat');
+    auth=getAuth(a);
+    db=getFirestore(a);
+    st('Terhubung ke Firebase…',true);
 
-// === FUNGSI LOGIN & DAFTAR ===
-window.masuk=async function(){
-  const email=document.getElementById('email').value.trim();
-  const sandi=document.getElementById('sandi').value;
-  if(!email||!sandi)return alert('Lengkapi email dan kata sandi');
-  
-  try{
-    await firebase.auth().signInWithEmailAndPassword(email,sandi);
-    alert('✅ Berhasil masuk! Selamat datang di KCAT 🎉');
-  }catch(e){
-    alert('❌ Gagal masuk: '+e.message);
-  }
-};
-
-window.daftar=async function(){
-  const nama=document.getElementById('nama').value.trim();
-  const email=document.getElementById('email-daftar').value.trim();
-  const sandi=document.getElementById('sandi-daftar').value;
-  
-  if(!nama||!email||sandi.length<6){
-    return alert('Lengkapi semua data! Kata sandi minimal 6 karakter');
-  }
-  
-  try{
-    const cred=await firebase.auth().createUserWithEmailAndPassword(email,sandi);
-    const uid=cred.user.uid;
-    const kcid='KC-'+Math.random().toString(36).substring(2,8).toUpperCase();
-    
-    await firebase.firestore().collection('users').doc(uid).set({
-      nama,email,kcid,bio:'',dibuat:firebase.firestore.FieldValue.serverTimestamp()
+    onAuthStateChanged(auth,async u=>{
+      if(!u){
+        hd.classList.add('hidden');
+        st('Silakan login atau daftar.',true);
+        return authScreen();
+      }
+      const ref=doc(db,'users',u.uid);
+      let s=await getDoc(ref);
+      if(!s.exists()){
+        await setDoc(ref,{
+          uid:u.uid,
+          name:pend||u.displayName||u.email.split('@')[0],
+          kcatId:'KC-'+Math.random().toString(36).slice(2,6).toUpperCase(),
+          bio:'Halo, aku memakai Kcat',
+          photo:'',
+          colorCode:'',
+          contacts:[],
+          blockedUids:[],
+          createdAt:serverTimestamp()
+        });
+      }
+      onSnapshot(ref,docSnap=>{
+        if(!docSnap.exists()) return;
+        me={...docSnap.data(),uid:u.uid};
+        U.set(u.uid,me);
+        if(me.bgUrl) document.documentElement.style.setProperty('--app-bg-img', `url('${me.bgUrl}')`);
+        if(me.btnColor) document.documentElement.style.setProperty('--btn-bg', me.btnColor);
+        hd.classList.remove('hidden');
+        st('Online sebagai '+me.name,true);
+        render();
+      });
     });
-    
-    await cred.user.updateProfile({displayName:nama});
-    alert('✅ Berhasil daftar! Silakan masuk 🎉');
-    gantiForm('login');
-  }catch(e){
-    alert('❌ Gagal daftar: '+e.message);
-  }
+  }catch(e){st('Gagal inisialisasi: '+e.message)}
+}
+
+function authScreen(err=''){
+  main.innerHTML=`<section class="card pn">
+    <h2>Masuk ke Kcat</h2>
+    <div id="ae" class="status bad">${esc(err)}</div>
+    <label>Nama Pengguna</label><input id="name" placeholder="Nama kamu">
+    <label>Email</label><input id="email" type="email" placeholder="nama@email.com">
+    <label>Password</label><input id="pw" type="password" placeholder="Minimal 6 karakter">
+    <div class="row" style="margin-top:14px">
+      <button class="primary grow" id="reg">Daftar</button>
+      <button class="grow" id="log">Login</button>
+    </div>
+  </section>`;
+  $('#reg').onclick=async()=>{
+    try{
+      pend=$('#name').value.trim();
+      await createUserWithEmailAndPassword(auth,$('#email').value.trim(),$('#pw').value);
+    }catch(e){$('#ae').textContent=e.message}
+  };
+  $('#log').onclick=async()=>{
+    try{
+      await signInWithEmailAndPassword(auth,$('#email').value.trim(),$('#pw').value);
+    }catch(e){$('#ae').textContent=e.message}
+  };
+}
+
+$('#btn-settings').onclick=()=>{
+  modal(`
+    <h3>⚙️ Setting</h3>
+    <button id="st-profile" style="width:100%;margin-bottom:8px">👤 Profil Saya</button>
+    <label>Change Button Color (Warna Tombol)</label>
+    <div class="row">
+      <input type="color" id="btn-col-picker" value="#322641">
+      <button id="btn-col-apply" class="primary">Terapkan Warna</button>
+    </div>
+  `);
+  $('#st-profile').onclick=()=>{closeOv();tab='account';render()};
+  $('#btn-col-apply').onclick=async()=>{
+    const c=$('#btn-col-picker').value;
+    document.documentElement.style.setProperty('--btn-bg',c);
+    if(me) await updateDoc(doc(db,'users',me.uid),{btnColor:c});
+    closeOv();
+  };
 };
 
-// === MULAI ===
-muatFirebase();
+function render(){
+  if(!me) return;
+  document.querySelectorAll('#tabs [data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  if(tab==='about') aboutScreen();
+  else if(tab==='chats') listRooms('private','Chat');
+  else if(tab==='groups') listRooms('group','Grup');
+  else if(tab==='account') accountScreen();
+  else if(tab==='music') musicScreen();
+  else main.innerHTML=`<section class="card pn"><h3>Tab ${tab}</h3><p class="sub">Fitur dalam pengembangan.</p></section>`;
+}
+
+$('#tabs').onclick=e=>{
+  const b=e.target.closest('[data-tab]');
+  if(b){tab=b.dataset.tab;render();}
+};
+
+function aboutScreen(){
+  main.innerHTML=`
+    <div class="sub-nav">
+      <button class="${aboutSubTab==='info'?'primary':''}" id="ab-info">Info KCAT</button>
+      <button class="${aboutSubTab==='donate'?'primary':''}" id="ab-don">Donate</button>
+    </div>
+    <div id="about-content"></div>
+  `;
+  
+  $('#ab-info').onclick=()=>{aboutSubTab='info';aboutScreen();};
+  $('#ab-don').onclick=()=>{aboutSubTab='donate';aboutScreen();};
+
+  const box=$('#about-content');
+  if(aboutSubTab==='info'){
+    box.innerHTML=`
+      <section class="card pn" style="text-align:center">
+        <div class="brand" style="font-size:36px">KCAT 😎</div>
+        <p style="margin-top:12px;text-align:left;line-height:1.5">
+          KCAT adalah sebuah platform Website atau Aplikasi Chatting inovatif yang dirancang secara mandiri oleh kreator dengan username <b>@busana</b>. Platform ini dibangun khusus sebagai ruang komunikasi digital yang dinamis, fleksibel, dan disesuaikan dengan kebutuhan komunitas atau pengguna targetnya.
+        </p>
+        <p class="sub" style="margin-top:10px">— KCAT Inc. - Update V2</p>
+      </section>
+      
+      <section class="card pn">
+        <h3>Secret Room</h3>
+        <p class="sub">Klik tombol di bawah untuk membuka ruang rahasia.</p>
+        <button id="btn-secret" style="opacity:0.75;width:100%;background:#e91e63" class="primary">🔒 Secret room</button>
+      </section>
+
+      <section class="card pn">
+        <h3>Contacts Us</h3>
+        <p>YouTube Busana: <a href="https://www.youtube.com/@BusanathehunterRel" target="_blank">@BusanathehunterRel</a><br>
+        YouTube Bob: <a href="https://www.youtube.com/@TheAdminBob98" target="_blank">@TheAdminBob98</a></p>
+      </section>
+    `;
+
+    $('#btn-secret').onclick=()=>{
+      const audio=$('#sfx-secret');
+      if(audio){audio.currentTime=0;audio.play().catch(()=>{});}
+      modal(`
+        <h3>🤫 Secret Room Unlocked!</h3>
+        <p>Selamat! Kamu telah menemukan tombol rahasia KCAT V2 🎉</p>
+      `);
+    };
+  } else {
+    box.innerHTML=`
+      <section class="card pn">
+        <h3>DONATE [Busana]</h3>
+        <p><a href="https://sociabuzz.com/busanacihuy/donate" target="_blank">https://sociabuzz.com/busanacihuy/donate</a></p>
+        <p class="sub">Untuk Support Website Mandiri ini boleh kali untuk Donasi Seikhlasnya ✌️😁<br>Atau Ajak Rec @Busana</p>
+      </section>
+
+      <section class="card pn">
+        <h3>DONATE [Bob]</h3>
+        <p>Donate robux saja, akun roblox = <b>asbunology</b> untuk support saya untuk game saya 🤭</p>
+      </section>
+    `;
+  }
+}
+
+function accountScreen(){
+  main.innerHTML=`
+    <section class="card pn" style="text-align:center">
+      ${av(me,'big')}
+      <h2 style="margin-top:8px">${getColoredNameHTML(me.name, me.colorCode)}</h2>
+      <div class="sub">Kcat ID: <b>${esc(me.kcatId)}</b></div>
+    </section>
+
+    <section class="card pn">
+      <h3>🎨 Custom Profile & Tampilan</h3>
+      <label>Nama Profil</label>
+      <input id="acc-name" value="${esc(me.name)}">
+      
+      <label>Warna Nama (Color Code / Redeem Code)</label>
+      <select id="acc-color-sel">
+        <option value="">Default (Putih)</option>
+        <option value="#cff1000" ${me.colorCode==='#cff1000'?'selected':''}>Merah (#cff1000)</option>
+        <option value="#cff8000" ${me.colorCode==='#cff8000'?'selected':''}>Oranye (#cff8000)</option>
+        <option value="#c0aba1d" ${me.colorCode==='#c0aba1d'?'selected':''}>Hijau (#c0aba1d)</option>
+        <option value="#gamer_123" ${me.colorCode==='#gamer_123'?'selected':''}>Merah Biru Hijau (#gamer_123)</option>
+        <option value="#cffcffcff" ${me.colorCode==='#cffcffcff'?'selected':''}>White (#cffcffcff)</option>
+        <option value="#000000" ${me.colorCode==='#000000'?'selected':''}>Black (#000000)</option>
+        <option value="#808080" ${me.colorCode==='#808080'?'selected':''}>Gray (#808080)</option>
+        <option value="#cffcff00" ${me.colorCode==='#cffcff00'?'selected':''}>Yellow (#cffcff00)</option>
+        <option value="#a52a2a" ${me.colorCode==='#a52a2a'?'selected':''}>Brown (#a52a2a)</option>
+        <option value="#000080" ${me.colorCode==='#000080'?'selected':''}>Navy Blue (#000080)</option>
+        <option value="#f5f5dc" ${me.colorCode==='#f5f5dc'?'selected':''}>Cream (#f5f5dc)</option>
+        <option value="#OGmember" ${me.colorCode==='#OGmember'?'selected':''}>Biru Muda (#OGmember)</option>
+        <option value="#trooll" ${me.colorCode==='#trooll'?'selected':''}>Abu-abu Gelap (#trooll)</option>
+      </select>
+
+      <label>Redeem Code Khusus (Terbatas 1x pakai)</label>
+      <div class="row">
+        <input id="acc-redeem-code" placeholder="Kode eksklusif...">
+        <button id="btn-redeem" class="primary">Redeem</button>
+      </div>
+      <div id="rd-msg" class="status"></div>
+
+      <label>Ganti Background Chat / App (URL Gambar)</label>
+      <input id="acc-bg-url" placeholder="https://..." value="${esc(me.bgUrl||'')}">
+
+      <button class="primary" id="btn-save-acc" style="margin-top:14px;width:100%">Simpan Perubahan Profil</button>
+    </section>
+
+    <button class="danger" id="btn-logout" style="width:100%">Keluar Akun</button>
+  `;
+
+  $('#btn-save-acc').onclick=async()=>{
+    const n=$('#acc-name').value.trim();
+    const c=$('#acc-color-sel').value;
+    const bg=$('#acc-bg-url').value.trim();
+    await updateDoc(doc(db,'users',me.uid),{name:n,colorCode:c,bgUrl:bg});
+    document.documentElement.style.setProperty('--app-bg-img', bg?`url('${bg}')`:'none');
+    alert('Profil berhasil diperbarui!');
+    render();
+  };
+
+  $('#btn-redeem').onclick=async()=>{
+    const code=$('#acc-redeem-code').value.trim();
+    const msg=$('#rd-msg');
+    if(!code) return;
+
+    if(code==='#theredfullmoon' || code==='#BusanaTheHunter'){
+      try{
+        const rRef=doc(db,'claimedCodes',code);
+        const snap=await getDoc(rRef);
+        if(snap.exists() && snap.data().claimedBy !== me.uid){
+          msg.className='status bad';
+          msg.textContent='Kode ini sudah di-redeem oleh orang lain!';
+          return;
+        }
+        await setDoc(rRef,{claimedBy:me.uid,claimedAt:serverTimestamp()});
+        await updateDoc(doc(db,'users',me.uid),{colorCode:code});
+        msg.className='status good';
+        msg.textContent='Berhasil Redeem warna eksklusif!';
+        render();
+      }catch(e){
+        msg.className='status bad';
+        msg.textContent='Gagal: '+e.message;
+      }
+    } else {
+      msg.className='status bad';
+      msg.textContent='Kode Redeem tidak valid.';
+    }
+  };
+
+  $('#btn-logout').onclick=()=>signOut(auth);
+}
+
+function listRooms(type,title){
+  main.innerHTML=`<h2>${title}</h2><p class="sub">Belum ada obrolan ${title.toLowerCase()}.</p>`;
+}
+
+const bgm=$('#bgm');
+function musicScreen(){
+  main.innerHTML=`
+    <section class="card pn">
+      <h3>🎵 Music Player</h3>
+      <label>Tambah Lagu (URL MP3 / Youtube)</label>
+      <div class="row">
+        <input id="m-url" placeholder="https://...">
+        <button id="m-add" class="primary">Tambah</button>
+      </div>
+    </section>
+    <div class="list">
+      ${pl.map((t,i)=>`
+        <div class="item">
+          <span class="grow"><b>${esc(t.title)}</b></span>
+          <button data-play="${i}">${i===pi?'Pause':'Play'}</button>
+        </div>
+      `).join('')||'<div class="card pn sub">Belum ada musik tersimpan.</div>'}
+    </div>
+  `;
+
+  $('#m-add').onclick=()=>{
+    const u=$('#m-url').value.trim();
+    if(u){
+      pl.push({title:'Musik '+(pl.length+1),url:u});
+      localStorage.setItem('kmusic',JSON.stringify(pl));
+      musicScreen();
+    }
+  };
+
+  main.querySelectorAll('[data-play]').forEach(b=>{
+    b.onclick=()=>{
+      const idx=+b.dataset.play;
+      if(pi===idx && !bgm.paused){
+        bgm.pause();
+        pi=-1;
+      } else {
+        pi=idx;
+        bgm.src=pl[idx].url;
+        bgm.play().catch(e=>alert('Gagal memutar audio: '+e.message));
+        $('#dock').classList.remove('hidden');
+        $('#dt').textContent='♪ '+pl[idx].title;
+      }
+      musicScreen();
+    };
+  });
+}
+
+$('#dp').onclick=()=>{
+  if(bgm.paused) bgm.play();
+  else bgm.pause();
+};
+$('#dn').onclick=()=>{
+  if(pl.length>0){
+    pi=(pi+1)%pl.length;
+    bgm.src=pl[pi].url;
+    bgm.play().catch(()=>{});
+    $('#dt').textContent='♪ '+pl[pi].title;
+  }
+};
+$('#dx').onclick=()=>{
+  bgm.pause();
+  $('#dock').classList.add('hidden');
+};
+
+init();
 </script>
 </body>
 </html>
+
