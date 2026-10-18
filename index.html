@@ -1,366 +1,124 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#191424">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="mobile-web-app-capable" content="yes">
-<title>Kcat</title>
+<title>KCAT</title>
 <style>
-:root{color-scheme:dark;--bg:#171321;--pink:#f329a5;--purple:#a64cf3;--cyan:#16d7eb;--green:#32d583;--muted:#b9aecb;--btn:#322641;--btn-border:#645173}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 10% 0%,#392143,transparent 45%),var(--bg);color:#fff;font:15px system-ui,-apple-system,Segoe UI,sans-serif}
-.app{max-width:760px;margin:auto;min-height:100dvh;display:flex;flex-direction:column;position:relative}
-.hd{padding:14px 14px 10px 46px;position:sticky;top:0;background:#1b1628f5;z-index:5;border-bottom:1px solid #ffffff12}
-.brand{font-size:28px;font-weight:900;font-style:italic;text-shadow:2px 2px 0 var(--pink)}
-.sub{color:var(--muted);font-size:12px}
-.row{display:flex;gap:8px;align-items:center}
-.grow{flex:1;min-width:0}
+:root{--bg:#171321;--pink:#f329a5;--purple:#a64cf3;--cyan:#16d7eb;--muted:#b9aecb;--btn:#322641;--btn-border:#645173}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+body{background:radial-gradient(ellipse at 10% 0%,#392143,transparent 45%),var(--bg);color:#fff;min-height:100vh}
+.container{max-width:480px;margin:0 auto;padding:20px}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center}
+h1{font-size:36px;font-style:italic;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+p{color:var(--muted);margin-bottom:20px}
+.spinner{width:45px;height:45px;border:3px solid #ffffff15;border-top:3px solid var(--pink);border-radius:50%;animation:putar 1s linear infinite;margin-bottom:20px}
+@keyframes putar{to{transform:rotate(360deg)}}
+.btn{padding:12px 24px;border-radius:12px;border:none;font-size:15px;font-weight:600;cursor:pointer}
+.btn-pink{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;width:100%}
+.btn-pink:active{transform:scale(.97)}
+.box{background:#241b35;border:2px solid #09070f;box-shadow:3px 3px 0 #000;border-radius:16px;padding:25px;margin-bottom:15px}
+input{width:100%;padding:12px;background:#0d0a13;border:1px solid #514361;border-radius:10px;color:#fff;margin:8px 0 16px}
+label{font-size:14px;color:var(--muted)}
+.error{background:rgba(255,80,120,.1);border:1px solid rgba(255,140,180,.4);border-radius:10px;padding:15px;margin:15px 0;color:#ffb6c6}
+.success{background:rgba(50,209,131,.1);border:1px solid rgba(50,209,131,.4);border-radius:10px;padding:15px;margin:15px 0;color:#92f8c8}
 .hidden{display:none!important}
-button,input,textarea{font:inherit}
-button{cursor:pointer;color:#fff;border:1px solid var(--btn-border);border-radius:12px;padding:10px 12px;background:var(--btn)}
-button.primary{border:0;background:linear-gradient(135deg,var(--pink),var(--purple));font-weight:800}
-button.danger{border-color:#a43d64;color:#ff9ab9}
-input,textarea{width:100%;background:#0d0a13;border:1px solid #514361;color:#fff;border-radius:12px;padding:12px;outline-color:var(--cyan)}
-label{display:block;color:var(--muted);font-size:12px;margin:12px 0 6px}
-#q{margin-top:10px;border:2px solid #09070f;box-shadow:3px 3px 0 #000}
-.tabs{display:flex;gap:6px;margin-top:10px;background:#0d0a13;border:2px solid #09070f;border-radius:16px;padding:6px;overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tabs button{flex:0 0 auto;min-width:64px;white-space:nowrap;position:relative;padding:8px 2px;font-size:12px;border:0;background:none;color:var(--muted)}
-.tabs button span{display:block;font-size:17px}
-.tabs button.active{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-weight:800}
-.tabs b{position:absolute;top:0;right:2px;background:var(--cyan);color:#000;font-size:10px;border-radius:9px;padding:1px 5px}
-.tabs b:empty{display:none}
-.status{font-size:12px;margin-top:8px}
-.good{color:var(--green)}
-.bad{color:#ff8eb7}
-main{padding:14px;flex:1}
-.list{display:flex;flex-direction:column;gap:9px}
-.card,.item{background:#241b35;border:2px solid #09070f;box-shadow:3px 3px 0 #000;border-radius:16px}
-.pn{padding:14px;margin-bottom:12px}
-.item{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:12px;color:#fff}
-.item small{display:block;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--pink),var(--purple));font-weight:900;flex-shrink:0;object-fit:cover;border:2px solid #09070f}
-.av.sm{width:36px;height:36px}
-.av.big{width:96px;height:96px;font-size:36px}
-.av.ring{border:3px solid var(--cyan)}
-.big{font-size:20px}
-h2,h3{margin:6px 0}
-.rh{margin-bottom:8px;position:sticky;top:0;background:#171321;padding:6px 0;z-index:3}
-.messages{display:flex;flex-direction:column;gap:7px;min-height:50vh;padding:10px 0}
-.msg{max-width:84%;align-self:flex-start;background:#382d48;padding:8px 11px;border-radius:14px;overflow-wrap:anywhere;white-space:pre-wrap}
-.msg.mine{align-self:flex-end;background:linear-gradient(135deg,#963ee0,#d92b9b)}
-.msg small{display:block;opacity:.7;font-size:10px;margin-top:3px}
-.msg strong{font-size:12px;color:var(--cyan)}
-.pic{max-width:100%;max-height:260px;border-radius:10px;display:block;margin:4px 0}
-.compose{display:flex;gap:6px;position:sticky;bottom:0;background:#171321;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
-.compose textarea{resize:none;min-height:44px;max-height:110px}
-#ov{position:fixed;inset:0;z-index:20}
-#ov.ovm{background:#000a;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:#241b35;border-radius:20px 20px 0 0;padding:16px;width:100%;max-width:760px;max-height:88dvh;overflow:auto;display:flex;flex-direction:column;gap:8px}
-.sv{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center}
-.svh{position:absolute;top:24px;left:12px;right:12px;z-index:3}
-.bars{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:4px;z-index:3}
-.bars i{flex:1;height:3px;background:#fff4;border-radius:2px;overflow:hidden;position:relative}
-.bars i.d{background:#fff}
-.bars i.a::after{content:"";position:absolute;inset:0;background:#fff;animation:p 5s linear forwards;transform-origin:left}
-@keyframes p{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.stext{font-size:28px;font-weight:800;text-align:center;padding:30px;overflow-wrap:anywhere}
-.simg{max-width:100%;max-height:100%;object-fit:contain}
-.scap{position:absolute;bottom:30px;background:#0009;padding:8px 14px;border-radius:12px;max-width:90%}
-.tapl,.tapr{position:absolute;top:80px;bottom:0;z-index:2}
-.tapl{left:0;width:33%}
-.tapr{right:0;width:67%}
-.sw{display:flex;gap:8px;margin:8px 0}
-.sw i{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer}
-.sw i.on{border-color:#fff}
-.dot{background:var(--cyan);color:#000;font-size:11px;font-weight:800;border-radius:10px;padding:1px 7px;margin-left:6px}
-#toast{position:fixed;top:10px;left:10px;right:10px;max-width:740px;margin:auto;z-index:30;background:linear-gradient(135deg,var(--pink),var(--purple));padding:12px 14px;border-radius:14px;font-weight:700;box-shadow:3px 3px 0 #000;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.by{position:absolute;top:0;right:12px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-size:11px;font-weight:800;padding:3px 10px 4px;border-radius:0 0 10px 10px;border:2px solid #09070f;border-top:0;box-shadow:2px 2px 0 #000;letter-spacing:.3px}
-.by span{margin-left:8px;opacity:.8}
-.credit{text-align:center;color:#9f94b1;font-size:12px;margin-top:14px}
-.credit b{color:var(--pink)}
-html{scroll-behavior:smooth}
-@keyframes in{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
-@keyframes slin{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
-@keyframes up{from{transform:translateY(100%)}to{transform:none}}
-@keyframes pop{from{opacity:0;transform:scale(.92) translateY(6px)}to{opacity:1;transform:none}}
-main.anim>*{animation:in .34s cubic-bezier(.2,.8,.2,1) both}
-main.anim>*:nth-child(2){animation-delay:.05s}
-main.anim>*:nth-child(3){animation-delay:.1s}
-main.anim>*:nth-child(n+4){animation-delay:.15s}
-main.room>*{animation:slin .28s cubic-bezier(.2,.8,.2,1) both}
-.sheet{animation:up .3s cubic-bezier(.2,.8,.2,1)}
-#ov.ovm{animation:fade .2s ease}
-@keyframes fade{from{opacity:0}to{opacity:1}}
-button{transition:transform .12s,background .25s,box-shadow .25s,opacity .2s}
-button:active{transform:scale(.95)}
-.item:active{transform:scale(.985)}
-.messages .msg:last-child{animation:pop .24s ease both}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.sk{position:relative}
-.sk img{width:100%;border-radius:12px;background:#0d0a13;cursor:pointer}
-.sk b{position:absolute;top:-4px;right:-4px;background:#a43d64;border-radius:50%;width:20px;height:20px;display:grid;place-items:center;font-size:11px;cursor:pointer}
-.stk{width:140px;height:140px;border-radius:14px;display:block;object-fit:cover}
-.msg.nobg{background:none!important;padding:0}
-.mention{color:var(--cyan);font-weight:800}
-.mine .mention{color:#fff;text-decoration:underline}
-.vbtn{background:#0d0a13;border:1px solid #645173;margin:4px 0;width:100%}
-#dock{position:fixed;right:10px;bottom:84px;z-index:15;background:#241b35;border:2px solid #09070f;box-shadow:3px 3px 0 #000;border-radius:14px;padding:8px;max-width:240px;animation:in .3s ease}
-#dock .row button{padding:4px 8px}
-#dt{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#mn{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0}
-#mn button{padding:4px 10px;font-size:13px}
-.about a{color:var(--cyan)}
-.bnr{height:90px;border-radius:12px;background:linear-gradient(135deg,#f329a5,#a64cf3) center/cover;margin-bottom:-34px}
-main .card .av.big{position:relative;border:3px solid #241b35}
-
-/* Sidebar Menu */
-#side-btn{position:fixed;top:14px;left:10px;z-index:10;font-size:20px;padding:4px 8px}
-#side-menu{position:fixed;inset:0;z-index:25;display:flex;pointer-events:none}
-#side-menu.show{pointer-events:auto}
-#side-menu .bg{flex:1;background:rgba(0,0,0,.5);opacity:0;transition:opacity .2s ease}
-#side-menu.show .bg{opacity:1}
-#side-menu .menu{width:280px;background:#241b35;border-right:2px solid #09070f;transform:translateX(-100%);transition:transform .25s ease;padding-top:50px;overflow-y:auto}
-#side-menu.show .menu{transform:translateX(0)}
-#side-menu .menu button{width:100%;text-align:left;margin:4px 12px}
-.secret-btn{background:rgba(50,209,131,.2);border:1px solid rgba(50,209,131,.3);opacity:.75;transition:all .2s}
-.secret-btn:hover{opacity:1;background:rgba(50,209,131,.3)}
-.color-swatch{width:30px;height:30px;border-radius:8px;border:2px solid #fff;cursor:pointer}
-.color-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:10px 0}
-input[type="color"]{width:100%;height:44px;border-radius:8px;border:none;cursor:pointer;background:transparent}
+a{color:var(--cyan);text-decoration:none}
+.tabs{display:flex;gap:8px;margin:15px 0}
+.tab{flex:1;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer}
+.tab.active{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff}
 </style>
 </head>
 <body>
-
-<!-- Tombol Menu Samping -->
-<button id="side-btn" class="hidden">☰</button>
-<div id="side-menu" class="hidden">
-  <div class="bg" onclick="closeSideMenu()"></div>
-  <div class="menu">
-    <div style="padding:0 16px 12px">
-      <h3 style="margin:0 0 10px">⚙️ Pengaturan</h3>
+<div class="container">
+  <!-- LAYAR LOADING -->
+  <div id="layar-muat" class="loading">
+    <div class="spinner"></div>
+    <h1>KCAT</h1>
+    <p id="status">Menghubungkan ke Firebase…</p>
+    <div id="pesan-error" class="error hidden">
+      <strong>⚠️ Gagal terhubung</strong>
+      <p id="teks-error"></p>
+      <button class="btn btn-pink" onclick="location.reload()" style="margin-top:10px">🔄 Coba Lagi</button>
     </div>
-    <button onclick="openSettingsTab('btnColor')">🎨 Ganti Warna Tombol</button>
-    <button onclick="openSettingsTab('profile')">👤 Profil Akun</button>
-    <button onclick="closeSideMenu()" style="margin-top:20px">✕ Tutup</button>
+  </div>
+
+  <!-- LAYAR UTAMA -->
+  <div id="layar-utama" class="hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h1 style="font-size:26px">KCAT</h1>
+      <span style="font-size:11px;color:var(--muted)">@Bus · @Bob</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="bukaTab('auth')">🔑 Akun</button>
+      <button class="tab" onclick="bukaTab('about')">ℹ️ Tentang</button>
+      <button class="tab" onclick="bukaTab('donate')">💝 Donate</button>
+    </div>
+
+    <!-- TAB LOGIN/DAFTAR -->
+    <div id="tab-auth">
+      <div class="box">
+        <h3 id="judul-form">Masuk ke KCAT</h3>
+        <p style="margin:5px 0 20px;font-size:14px">Masukkan email & kata sandi</p>
+        
+        <div id="form-login">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="email@contoh.com">
+          <label>Kata Sandi</label>
+          <input type="password" id="sandi" placeholder="Minimal 6 karakter">
+          <button class="btn btn-pink" onclick="masuk()">🔑 Masuk</button>
+          <p style="text-align:center;margin-top:15px">Belum punya akun? <a href="#" onclick="gantiForm('daftar')">Daftar</a></p>
+        </div>
+
+        <div id="form-daftar" class="hidden">
+          <label>Nama Lengkap</label>
+          <input type="text" id="nama" placeholder="Nama kamu">
+          <label>Email</label>
+          <input type="email" id="email-daftar" placeholder="email@contoh.com">
+          <label>Kata Sandi</label>
+          <input type="password" id="sandi-daftar" placeholder="Minimal 6 karakter">
+          <button class="btn btn-pink" onclick="daftar()">✨ Daftar</button>
+          <p style="text-align:center;margin-top:15px">Sudah punya akun? <a href="#" onclick="gantiForm('login')">Masuk</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB TENTANG -->
+    <div id="tab-about" class="hidden">
+      <div class="box">
+        <h3>ℹ️ Tentang KCAT</h3>
+        <p style="line-height:1.7;margin:15px 0">
+          KCAT adalah sebuah platform Website atau Aplikasi Chatting inovatif yang dirancang secara mandiri oleh kreator dengan username @busana. Platform ini dibangun khusus sebagai ruang komunikasi digital yang dinamis, fleksibel, dan disesuaikan dengan kebutuhan komunitas atau pengguna targetnya.
+        </p>
+        <p style="font-weight:600">KCAT Inc. - Update V2</p>
+        <button style="width:100%;margin-top:20px;background:rgba(50,209,131,.2);border:1px solid rgba(50,209,131,.3);color:#32d583;opacity:.75" class="btn" onclick="alert('🔓 Selamat datang di Secret Room! 🤫')">🔓 Secret Room</button>
+      </div>
+    </div>
+
+    <!-- TAB DONATE -->
+    <div id="tab-donate" class="hidden">
+      <div class="box">
+        <h3>💝 DONATE</h3>
+        <div style="background:#1b1628;border-radius:10px;padding:15px;margin:15px 0">
+          <h4>Busana</h4>
+          <p style="font-size:14px;color:#ccc;margin:8px 0">Untuk Support Website Mandiri ini boleh kali untuk Donasi Seikhlasnya ✌️😁</p>
+          <a href="https://sociabuzz.com/busanacihuy/donate" target="_blank" style="color:var(--cyan)">🔗 sociabuzz.com/busanacihuy/donate</a>
+        </div>
+        <div style="background:#1b1628;border-radius:10px;padding:15px;margin:15px 0">
+          <h4>Bob</h4>
+          <p style="font-size:14px;color:#ccc;margin:8px 0">Donate robux saja, akun roblox = <strong>asbunology</strong> untuk support saya untuk game saya 🤭</p>
+          <p style="font-size:14px;color:#ccc">Terima kasih banyak! 😊</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="app">
-  <header class="hd hidden" id="hd">
-    <div class="by">@Bus <span>@Bob</span></div>
-    <div class="row">
-      <div class="grow">
-        <div class="brand" style="margin-top:6px">KCAT 😎</div>
-        <div class="sub">Chat real-time · satu aplikasi, semua teman</div>
-      </div>
-    </div>
-    <input id="q" placeholder="Cari chat, kontak, pesan…">
-    <nav class="tabs" id="tabs">
-      <button data-tab="about" class="active"><span>ℹ️</span>Tentang<b></b></button>
-      <button data-tab="chats"><span>💬</span>Chat<b></b></button>
-      <button data-tab="status"><span>◎</span>Status<b></b></button>
-      <button data-tab="groups"><span>👥</span>Grup<b></b></button>
-      <button data-tab="contacts"><span>📇</span>Kontak<b></b></button>
-      <button data-tab="account"><span>🙂</span>Akun<b></b></button>
-      <button data-tab="music"><span>🎵</span>Musik<b></b></button>
-    </nav>
-  </header>
-
-  <div id="conn" class="status" style="padding:0 14px">Memuat Firebase…</div>
-  <main id="main"></main>
-</div>
-
-<div id="toast" class="hidden"></div>
-<div id="ov" class="hidden"></div>
-<audio id="bgm" preload="none">
-<audio id="secretAudio" src="secret.mp3" preload="auto">
-
 <script>
-(function(){
-  var m=document.getElementById('main');
-  m.innerHTML='<section class="card pn"><h2>Menyiapkan Kcat…</h2><p class="sub" id="fb">Memuat Firebase. Tunggu sebentar.</p></section>';
-  setTimeout(function(){
-    var f=document.getElementById('fb');
-    if(f&&!window.__kcatLoaded)
-      f.textContent='Firebase belum termuat. Cek internet lalu muat ulang.';
-  },9000);
-})();
-
-// === Menu Samping ===
-function openSideMenu(){
-  document.getElementById('side-menu').classList.remove('hidden');
-  setTimeout(()=>document.getElementById('side-menu').classList.add('show'),10);
-}
-function closeSideMenu(){
-  document.getElementById('side-menu').classList.remove('show');
-  setTimeout(()=>document.getElementById('side-menu').classList.add('hidden'),200);
-}
-function openSettingsTab(tab){
-  closeSideMenu();
-  if(tab==='profile'){
-    document.querySelector('[data-tab="account"]').click();
-  }else if(tab==='btnColor'){
-    showButtonColorSettings();
-  }
-}
-document.getElementById('side-btn').addEventListener('click',openSideMenu);
-
-// === Ganti Warna Tombol ===
-function showButtonColorSettings(){
-  const ov=document.getElementById('ov');
-  ov.className='ovm';
-  ov.innerHTML=`
-    <div class="sheet">
-      <h3>🎨 Ganti Warna Tombol</h3>
-      <p class="sub">Pilih warna latar tombol:</p>
-      <label>Warna Utama:</label>
-      <input type="color" id="btnMainColor" value="#322641">
-      <label>Warna Border:</label>
-      <input type="color" id="btnBorderColor" value="#645173">
-      <div class="row" style="margin-top:14px">
-        <button onclick="saveButtonColor()" class="grow primary">✅ Simpan</button>
-        <button onclick="closeSheet()" class="danger">Batal</button>
-      </div>
-    </div>
-  `;
-  const saved=localStorage.getItem('btnColors');
-  if(saved){
-    const c=JSON.parse(saved);
-    document.getElementById('btnMainColor').value=c.main;
-    document.getElementById('btnBorderColor').value=c.border;
-  }
-}
-function saveButtonColor(){
-  const main=document.getElementById('btnMainColor').value;
-  const border=document.getElementById('btnBorderColor').value;
-  document.documentElement.style.setProperty('--btn',main);
-  document.documentElement.style.setProperty('--btn-border',border);
-  localStorage.setItem('btnColors',JSON.stringify({main,border}));
-  closeSheet();
-  showToast('✅ Warna tombol diperbarui!');
-}
-function closeSheet(){
-  document.getElementById('ov').className='hidden';
-  document.getElementById('ov').innerHTML='';
-}
-
-// Terapkan warna tombol dari localStorage saat buka
-(function(){
-  const saved=localStorage.getItem('btnColors');
-  if(saved){
-    const c=JSON.parse(saved);
-    document.documentElement.style.setProperty('--btn',c.main);
-    document.documentElement.style.setProperty('--btn-border',c.border);
-  }
-})();
-
-// === Toast ===
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.classList.remove('hidden');
-  setTimeout(()=>t.classList.add('hidden'),3000);
-}
-
-// === Kode Warna Nama Profil ===
-const colorCodes={
-  '#cff1000':'#ff0000',
-  '#cff8000':'#ff8000',
-  '#c0aba1d':'#0aba1d',
-  '#gamer_123':'linear-gradient(90deg,red,blue,green)',
-  '#cffcffcff':'#ffffff',
-  '#000000':'#000000',
-  '#808080':'#808080',
-  '#cffcff00':'#ffff00',
-  '#a52a2a':'#a52a2a',
-  '#000080':'#000080',
-  '#f5f5dc':'#f5f5dc',
-  '#theredfullmoon':'#8b0000',
-  '#BusanaTheHunter':'linear-gradient(90deg,#ffd700,#fff44f,#ffd700)',
-  '#OGmember':'#87ceeb',
-  '#trooll':'#444444'
-};
-const usedCodes={
-  '#theredfullmoon':false,
-  '#BusanaTheHunter':false
-};
-function applyColorCode(text,uid){
-  if(colorCodes[text]){
-    const code=text;
-    if((code==='#theredfullmoon'||code==='#BusanaTheHunter')){
-      const stored=localStorage.getItem('used_'+code);
-      if(stored&&stored!==uid)return null;
-      if(!stored)localStorage.setItem('used_'+code,uid);
-    }
-    return colorCodes[code];
-  }
-  return null;
-}
-window.KcatHelpers={applyColorCode};
-
-// === Musik Player ===
-let isPlayingMusic=false;
-document.getElementById('bgm').addEventListener('ended',()=>{isPlayingMusic=false;updateMusicUI()});
-function toggleMusic(){
-  const bgm=document.getElementById('bgm');
-  if(isPlayingMusic){bgm.pause();isPlayingMusic=false;}
-  else{bgm.play();isPlayingMusic=true;}
-  updateMusicUI();
-}
-function updateMusicUI(){
-  const btn=document.querySelector('#music-play-btn');
-  if(btn)btn.innerHTML=isPlayingMusic?'⏸️ Jeda':'▶️ Putar';
-}
-window.toggleMusic=toggleMusic;
-
-// === Secret Room ===
-function openSecretRoom(){
-  document.getElementById('secretAudio').play().catch(e=>console.log('Audio play failed'));
-  showToast('🔓 Selamat datang di Secret Room! 🤫');
-}
-window.openSecretRoom=openSecretRoom;
-
-// Tutup overlay saat klik luar
-document.getElementById('ov').addEventListener('click',function(e){
-  if(e.target===this)closeSheet();
-});
-</script>
-
-<script type="module">
-const sdkSets=[
-  ['https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js',
-   'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js',
-   'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js'],
-  ['https://cdn.jsdelivr.net/npm/firebase@11.10.0/app/+esm',
-   'https://cdn.jsdelivr.net/npm/firebase@11.10.0/auth/+esm',
-   'https://cdn.jsdelivr.net/npm/firebase@11.10.0/firestore/+esm']
-];
-
-let SDK=null,sdkErr=null,sdkIdx=0;
-for(const set of sdkSets){
-  try{
-    SDK=await Promise.all(set.map(u=>import(u)));
-    sdkIdx=sdkSets.indexOf(set);
-    break;
-  }catch(e){sdkErr=e}
-}
-if(!SDK){
-  document.getElementById('main').innerHTML='<section class="card pn"><h2>Gagal memuat Firebase</h2><p class="sub bad">Periksa koneksi internet lalu muat ulang.</p></section>';
-  throw sdkErr;
-}
-
-const {initializeApp}=SDK[0];
-const {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut,updateProfile}=SDK[1];
-const {getFirestore,doc,setDoc,getDoc,collection,query,where,orderBy,onSnapshot,addDoc,updateDoc,deleteDoc,increment,serverTimestamp,arrayUnion,arrayRemove}=SDK[2];
-
-// === Firebase Config ===
-let defaultConfig={
+// === FIREBASE CONFIG — SUDAH BENAR DARI DALAM ===
+const firebaseConfig={
   apiKey:"AIzaSyCBMmtEoOqy_HQ4IxXB8jxivT86IRDqC0",
   authDomain:"kcat-10a8f.firebaseapp.com",
   projectId:"kcat-10a8f",
@@ -368,450 +126,96 @@ let defaultConfig={
   messagingSenderId:"357416876079",
   appId:"1:357416876079:web:8a810955a0ba45623d6eda"
 };
-let savedConfig=localStorage.getItem('firebaseConfig');
-let firebaseConfig=savedConfig?JSON.parse(savedConfig):defaultConfig;
 
-// === Tes Koneksi & Halaman Konfigurasi ===
-if(location.hash==='#setup'||!savedConfig){
-  showSetupScreen();
-}else{
-  initApp();
+// === FUNGSI BANTUAN ===
+function status(text){document.getElementById('status').textContent=text}
+function tampilError(pesan){
+  document.getElementById('pesan-error').classList.remove('hidden');
+  document.getElementById('teks-error').textContent=pesan;
+  document.querySelector('.spinner').style.display='none';
+}
+function bukaAplikasi(){
+  document.getElementById('layar-muat').classList.add('hidden');
+  document.getElementById('layar-utama').classList.remove('hidden');
+}
+function gantiForm(jenis){
+  if(jenis==='daftar'){
+    document.getElementById('form-login').classList.add('hidden');
+    document.getElementById('form-daftar').classList.remove('hidden');
+    document.getElementById('judul-form').textContent='Buat Akun Baru';
+  }else{
+    document.getElementById('form-daftar').classList.add('hidden');
+    document.getElementById('form-login').classList.remove('hidden');
+    document.getElementById('judul-form').textContent='Masuk ke KCAT';
+  }
+}
+function bukaTab(nama){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));
+  document.getElementById('tab-'+nama).classList.remove('hidden');
 }
 
-function showSetupScreen(){
-  const m=document.getElementById('main');
-  m.innerHTML=`
-    <section class="card pn">
-      <h2>⚙️ Tes Koneksi & Pengaturan Firebase</h2>
-      <p class="sub">Config bawaan sudah terpasang. Gunakan ini hanya jika perlu mengganti API key.</p>
-      <label>Tempel firebaseConfig di bawah:</label>
-      <textarea id="cfgInput" rows="10" style="font-size:11px">${JSON.stringify(firebaseConfig,null,2)}</textarea>
-      <div class="row" style="margin-top:10px">
-        <button onclick="useDefaultConfig()" class="grow">🔄 Pakai Bawaan</button>
-        <button onclick="saveConfig()" class="grow primary">✅ Simpan & Muat Ulang</button>
-      </div>
-      <div style="margin-top:16px">
-        <button onclick="testConnection()" style="width:100%">🔍 Tes Koneksi Sekarang</button>
-        <div id="testResult" class="status" style="margin-top:10px"></div>
-      </div>
-    </section>
-  `;
-}
-function useDefaultConfig(){
-  localStorage.removeItem('firebaseConfig');
-  location.reload();
-}
-function saveConfig(){
+// === MUAT FIREBASE ===
+async function muatFirebase(){
+  status('Memuat pustaka Firebase…');
+  
   try{
-    const c=JSON.parse(document.getElementById('cfgInput').value);
-    localStorage.setItem('firebaseConfig',JSON.stringify(c));
-    location.reload();
+    await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js');
+    await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js');
+    await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
+    
+    const app=firebase.initializeApp(firebaseConfig);
+    status('✅ Terhubung ke Firebase!');
+    
+    setTimeout(bukaAplikasi,600);
+  }catch(err){
+    tampilError('Tidak bisa terhubung. Cek internet lalu coba lagi. ('+err.message+')');
+  }
+}
+
+// === FUNGSI LOGIN & DAFTAR ===
+window.masuk=async function(){
+  const email=document.getElementById('email').value.trim();
+  const sandi=document.getElementById('sandi').value;
+  if(!email||!sandi)return alert('Lengkapi email dan kata sandi');
+  
+  try{
+    await firebase.auth().signInWithEmailAndPassword(email,sandi);
+    alert('✅ Berhasil masuk! Selamat datang di KCAT 🎉');
   }catch(e){
-    alert('Format JSON salah! Cek lagi ya.');
+    alert('❌ Gagal masuk: '+e.message);
   }
-}
-async function testConnection(){
-  const r=document.getElementById('testResult');
-  r.innerHTML='⌛ Sedang mengetes…';
+};
+
+window.daftar=async function(){
+  const nama=document.getElementById('nama').value.trim();
+  const email=document.getElementById('email-daftar').value.trim();
+  const sandi=document.getElementById('sandi-daftar').value;
+  
+  if(!nama||!email||sandi.length<6){
+    return alert('Lengkapi semua data! Kata sandi minimal 6 karakter');
+  }
+  
   try{
-    const cfg=JSON.parse(document.getElementById('cfgInput').value||JSON.stringify(defaultConfig));
-    const len=cfg.apiKey.length;
-    let res='';
-    res+=(len===39&&cfg.apiKey.startsWith('AIza'))?'✅ Panjang API key: '+len+' ✓':'⚠️ Panjang API key: '+len+' (seharusnya 39, awalan AIza)';
-    try{
-      const t=await fetch('https://firestore.googleapis.com/v1/projects/'+cfg.projectId+'/databases/(default)/documents?pageSize=1',{signal:AbortSignal.timeout(8000)});
-      res+='<br>✅ Firestore terjangkau (HTTP '+t.status+')';
-    }catch(e){res+='<br>❌ Firestore tidak terjangkau: '+e.message}
-    r.innerHTML=res;
-  }catch(e){r.innerHTML='❌ Gagal: '+e.message}
-}
-
-function initApp(){
-  const app=initializeApp(firebaseConfig);
-  const auth=getAuth(app);
-  const db=getFirestore(app);
-  window.__kcatLoaded=true;
-
-  const hd=document.getElementById('hd');
-  const conn=document.getElementById('conn');
-  const main=document.getElementById('main');
-  const tabs=document.getElementById('tabs');
-  const sideBtn=document.getElementById('side-btn');
-
-  let currentUser=null;
-  let activeTab='about';
-  let unsubscribeChats=null;
-  let unsubscribeRoom=null;
-  let bgImage=localStorage.getItem('bgImage')||null;
-
-  onAuthStateChanged(auth,async(user)=>{
-    if(user){
-      currentUser=user;
-      hd.classList.remove('hidden');
-      sideBtn.classList.remove('hidden');
-      conn.innerHTML='✅ Terhubung sebagai: '+user.email;
-      conn.className='status good';
-      loadTab('chats');
-    }else{
-      currentUser=null;
-      hd.classList.add('hidden');
-      sideBtn.classList.add('hidden');
-      conn.innerHTML='🔐 Silakan daftar atau login';
-      conn.className='status';
-      showAuthScreen();
-    }
-  });
-
-  function showAuthScreen(){
-    main.innerHTML=`
-      <section class="card pn">
-        <h2>👋 Selamat Datang di Kcat</h2>
-        <p class="sub">Chat real-time, gratis & milikmu sendiri</p>
-        <div id="authForm">
-          <div id="loginView">
-            <label>Email</label>
-            <input type="email" id="lemail" placeholder="email@contoh.com">
-            <label>Kata Sandi</label>
-            <input type="password" id="lpass" placeholder="Minimal 6 karakter">
-            <button onclick="doLogin()" class="primary" style="width:100%;margin-top:10px">🔑 Masuk</button>
-            <p class="sub" style="text-align:center;margin-top:10%">Belum punya akun? <a href="#" onclick="showRegForm()">Daftar</a></p>
-          </div>
-          <div id="regView" class="hidden">
-            <label>Nama Lengkap</label>
-            <input type="text" id="rname" placeholder="Nama kamu">
-            <label>Email</label>
-            <input type="email" id="remail" placeholder="email@contoh.com">
-            <label>Kata Sandi</label>
-            <input type="password" id="rpass" placeholder="Minimal 6 karakter">
-            <button onclick="doRegister()" class="primary" style="width:100%;margin-top:10px">✨ Daftar</button>
-            <p class="sub" style="text-align:center;margin-top:10px">Sudah punya akun? <a href="#" onclick="showLoginForm()">Masuk</a></p>
-          </div>
-        </div>
-        <p class="credit">Powered by <b>Firebase</b> · Kcat v12 · @Bus + @Bob</p>
-      </section>
-    `;
-  }
-  window.showRegForm=()=>{
-    document.getElementById('loginView').classList.add('hidden');
-    document.getElementById('regView').classList.remove('hidden');
-  };
-  window.showLoginForm=()=>{
-    document.getElementById('regView').classList.add('hidden');
-    document.getElementById('loginView').classList.remove('hidden');
-  };
-  window.doLogin=async()=>{
-    const email=document.getElementById('lemail').value;
-    const pass=document.getElementById('lpass').value;
-    try{
-      await signInWithEmailAndPassword(auth,email,pass);
-    }catch(e){alert('Login gagal: '+e.message)}
-  };
-  window.doRegister=async()=>{
-    const name=document.getElementById('rname').value;
-    const email=document.getElementById('remail').value;
-    const pass=document.getElementById('rpass').value;
-    if(!name||!email||pass.length<6)return alert('Lengkapi semua data ya');
-    try{
-      const cred=await createUserWithEmailAndPassword(auth,email,pass);
-      const uid=cred.user.uid;
-      const kcid='KC-'+Math.random().toString(36).substring(2,8).toUpperCase();
-      await setDoc(doc(db,'users',uid),{
-        name,email,kcid,photo:'',bio:'',bgImage:'',colorCode:'',createdAt:serverTimestamp()
-      });
-      await updateProfile(cred.user,{displayName:name});
-    }catch(e){alert('Daftar gagal: '+e.message)}
-  };
-
-  tabs.addEventListener('click',e=>{
-    const t=e.target.closest('button[data-tab]');
-    if(t)loadTab(t.dataset.tab);
-  });
-
-  function loadTab(tab){
-    activeTab=tab;
-    document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
-    document.querySelector('#tabs button[data-tab="'+tab+'"]').classList.add('active');
-    main.className='anim';
-    if(unsubscribeChats)unsubscribeChats();
-    if(unsubscribeRoom)unsubscribeRoom();
-
-    switch(tab){
-      case 'about': return renderAboutTab();
-      case 'chats': return renderChatsTab();
-      case 'status': return renderStatusTab();
-      case 'groups': return renderGroupsTab();
-      case 'contacts': return renderContactsTab();
-      case 'account': return renderAccountTab();
-      case 'music': return renderMusicTab();
-    }
-  }
-
-  function renderAboutTab(){
-    main.innerHTML=`
-      <section class="card pn">
-        <h2>ℹ️ Tentang KCAT</h2>
-        <p style="line-height:1.6">
-          KCAT adalah sebuah platform Website atau Aplikasi Chatting inovatif yang dirancang secara mandiri oleh kreator dengan username @busana. Platform ini dibangun khusus sebagai ruang komunikasi digital yang dinamis, fleksibel, dan disesuaikan dengan kebutuhan komunitas atau pengguna targetnya.
-        </p>
-        <p><strong>KCAT Inc. - Update V2</strong></p>
-        
-        <div style="display:flex;gap:8px;margin:16px 0">
-          <button onclick="showAboutSubTab('about')" id="tab-about" class="primary" style="flex:1">Tentang</button>
-          <button onclick="showAboutSubTab('donate')" id="tab-donate" style="flex:1">💝 Donate</button>
-        </div>
-        
-        <div id="about-content">
-          <p class="sub">Pilih tab di atas untuk melihat konten</p>
-        </div>
-        
-        <button class="secret-btn" onclick="openSecretRoom()" style="width:100%;margin-top:20px">🔓 Secret Room</button>
-      </section>
-    `;
-    showAboutSubTab('about');
-  }
-  window.showAboutSubTab=function(sub){
-    const c=document.getElementById('about-content');
-    document.querySelectorAll('#about-content~button').forEach(b=>b.style.display='');
-    if(sub==='about'){
-      c.innerHTML=`
-        <h3>Apa yang baru?</h3>
-        <ul style="line-height:1.8">
-          <li>🎵 Pemutar musik bawaan</li>
-          <li>🎨 Ganti latar belakang profil</li>
-          <li>✨ Warna nama profil dengan kode khusus</li>
-          <li>🔓 Secret Room</li>
-          <li>⚙️ Pengaturan tombol di menu samping</li>
-        </ul>
-      `;
-      document.querySelector('.secret-btn').style.display='';
-    }else if(sub==='donate'){
-      c.innerHTML=`
-        <h3>💝 DONATE</h3>
-        <div class="card pn" style="background:#1b1628;margin:12px 0">
-          <h4>Busana</h4>
-          <p>Untuk Support Website Mandiri ini boleh kali untuk Donasi Seikhlasnya ✌️😁</p>
-          <a href="https://sociabuzz.com/busanacihuy/donate" target="_blank" style="color:var(--cyan)">🔗 sociabuzz.com/busanacihuy/donate</a>
-        </div>
-        <div class="card pn" style="background:#1b1628;margin:12px 0">
-          <h4>Bob</h4>
-          <p>Donate robux saja, akun roblox = <strong>asbunology</strong> untuk support saya untuk game saya 🤭</p>
-          <p>Terima kasih banyak! 😊</p>
-        </div>
-      `;
-      document.querySelector('.secret-btn').style.display='none';
-    }
-    document.querySelectorAll('#tab-about, #tab-donate').forEach(b=>{
-      b.classList.remove('primary');
-      b.style.opacity='0.7';
+    const cred=await firebase.auth().createUserWithEmailAndPassword(email,sandi);
+    const uid=cred.user.uid;
+    const kcid='KC-'+Math.random().toString(36).substring(2,8).toUpperCase();
+    
+    await firebase.firestore().collection('users').doc(uid).set({
+      nama,email,kcid,bio:'',dibuat:firebase.firestore.FieldValue.serverTimestamp()
     });
-    document.getElementById('tab-'+sub).classList.add('primary');
-    document.getElementById('tab-'+sub).style.opacity='1';
-  };
+    
+    await cred.user.updateProfile({displayName:nama});
+    alert('✅ Berhasil daftar! Silakan masuk 🎉');
+    gantiForm('login');
+  }catch(e){
+    alert('❌ Gagal daftar: '+e.message);
+  }
+};
 
-  function renderChatsTab(){
-    main.innerHTML='<section class="card pn"><h2>💬 Chat</h2><p class="sub">Mulai chat baru dari tab Kontak</p><div id="chatList"></div></section>';
-    const qry=query(collection(db,'rooms'),where('members','array-contains',currentUser.uid),orderBy('updatedAt','desc'));
-    unsubscribeChats=onSnapshot(qry,snap=>{
-      const list=document.getElementById('chatList');
-      if(snap.empty){
-        list.innerHTML='<p class="sub">Belum ada chat. Tambah teman dulu di tab Kontak.</p>';
-        return;
-      }
-      list.innerHTML='';
-      snap.forEach(doc=>{
-        const d=doc.data();
-        const otherId=d.members.find(m=>m!==currentUser.uid);
-        renderChatItem(list,doc.id,d,otherId);
-      });
-    });
-  }
-  async function renderChatItem(cont,rid,data,otherId){
-    const ud=await getDoc(doc(db,'users',otherId));
-    const u=ud.data()||{name:'Pengguna',kcid:'----'};
-    const div=document.createElement('button');
-    div.className='item';
-    div.innerHTML=`
-      <div class="av sm">${(u.name||'?')[0].toUpperCase()}</div>
-      <div class="grow">
-        <div><strong>${u.name||'Pengguna'}</strong></div>
-        <small>${u.kcid||'----'} · ${data.lastMessage||'Mulai chat'}</small>
-      </div>
-    `;
-    div.onclick=()=>openRoom(rid,u);
-    cont.appendChild(div);
-  }
-  async function openRoom(rid,otherUser){
-    main.innerHTML='<section><div class="rh"><button onclick="loadTab(\'chats\')">← Kembali</button> <strong>Chat dengan '+otherUser.name+'</strong></div><div id="msgs" class="messages"></div><div class="compose"><textarea id="msgIn" placeholder="Ketik pesan…"></textarea><button onclick="sendMsg(\''+rid+'\')">Kirim</button></div></section>';
-    const qry=query(collection(db,'rooms',rid,'messages'),orderBy('createdAt','asc'));
-    unsubscribeRoom=onSnapshot(qry,snap=>{
-      const m=document.getElementById('msgs');
-      m.innerHTML='';
-      snap.forEach(doc=>{
-        const d=doc.data();
-        const mine=d.from===currentUser.uid;
-        m.innerHTML+=`<div class="msg ${mine?'mine':''}">${d.text||'<gambar>'}<small>${new Date(d.createdAt?.toDate()).toLocaleTimeString()}</small></div>`;
-      });
-      m.scrollTop=m.scrollHeight;
-    });
-    window.sendMsg=async function(roomId){
-      const inp=document.getElementById('msgIn');
-      const text=inp.value.trim();
-      if(!text)return;
-      inp.value='';
-      await addDoc(collection(db,'rooms',roomId,'messages'),{
-        text,from:currentUser.uid,createdAt:serverTimestamp()
-      });
-      await updateDoc(doc(db,'rooms',roomId),{
-        lastMessage:text,updatedAt:serverTimestamp()
-      });
-    };
-  }
-
-  function renderStatusTab(){
-    main.innerHTML='<section class="card pn"><h2>◎ Status</h2><p class="sub">Fitur status akan hadir segera!</p></section>';
-  }
-  function renderGroupsTab(){
-    main.innerHTML='<section class="card pn"><h2>👥 Grup</h2><p class="sub">Buat dan kelola grup akan hadir segera!</p></section>';
-  }
-  function renderContactsTab(){
-    main.innerHTML=`
-      <section class="card pn">
-        <h2>📇 Kontak</h2>
-        <label>Masukkan KcID teman:</label>
-        <input type="text" id="kcidInput" placeholder="Contoh: KC-ABC123">
-        <button onclick="searchContact()" class="primary" style="width:100%;margin-top:8px">🔍 Cari Teman</button>
-        <div id="searchResult" style="margin-top:14px"></div>
-      </section>
-    `;
-  }
-  window.searchContact=async function(){
-    const kcid=document.getElementById('kcidInput').value.trim().toUpperCase();
-    const res=document.getElementById('searchResult');
-    if(!kcid){res.innerHTML='<p class="sub bad">Masukkan KcID dulu</p>';return}
-    if(kcid===await getMyKCID()){res.innerHTML='<p class="sub bad">Itu KcID kamu sendiri</p>';return}
-    const q=query(collection(db,'users'),where('kcid','==',kcid));
-    const snap=await getDocs(q);
-    if(snap.empty){res.innerHTML='<p class="sub">KcID tidak ditemukan</p>';return}
-    snap.forEach(async u=>{
-      const d=u.data();
-      const oid=u.id;
-      res.innerHTML=`
-        <div class="item">
-          <div class="av sm">${d.name[0].toUpperCase()}</div>
-          <div class="grow"><strong>${d.name}</strong><br><small>${d.kcid}</small></div>
-          <button onclick="startChat('${oid}')">💬 Chat</button>
-        </div>
-      `;
-    });
-  };
-  async function getMyKCID(){
-    const ud=await getDoc(doc(db,'users',currentUser.uid));
-    return ud.data()?.kcid||'';
-  }
-  window.startChat=async function(otherUid){
-    const members=[currentUser.uid,otherUid].sort();
-    const q=query(collection(db,'rooms'),where('members','==',members));
-    const ex=await getDocs(q);
-    let rid;
-    if(ex.empty){
-      const r=await addDoc(collection(db,'rooms'),{members,lastMessage:'',updatedAt:serverTimestamp()});
-      rid=r.id;
-    }else{
-      rid=ex.docs[0].id;
-    }
-    loadTab('chats');
-  };
-
-  function renderAccountTab(){
-    getDoc(doc(db,'users',currentUser.uid)).then(snap=>{
-      const d=snap.data()||{};
-      const nameColor=d.colorCode?getColorDisplay(d.colorCode):'inherit';
-      main.innerHTML=`
-        <section class="card pn">
-          <div class="bnr" style="${bgImage?'background:url('+bgImage+') center/cover':''}"></div>
-          <div style="text-align:center;margin-top:-20px">
-            <div class="av big" style="margin:0 auto">${(d.name||'?')[0].toUpperCase()}</div>
-            <h2 style="color:${nameColor}">${d.name||'Pengguna'}</h2>
-            <p class="sub">${d.kcid||'----'}</p>
-          </div>
-          
-          <label>Bio / Kode Warna Nama:</label>
-          <textarea id="userBio" placeholder="Tulis bio atau masukkan kode warna nama di sini">${d.bio||''}</textarea>
-          
-          <label>URL Gambar Latar Belakang:</label>
-          <input type="text" id="userBg" placeholder="Tempel link gambar (jpg/png)">
-          
-          <button onclick="saveProfile()" class="primary" style="width:100%;margin-top:10px">💾 Simpan Profil</button>
-          
-          <div style="margin-top:20px;text-align:center">
-            <button onclick="doLogout()" class="danger">🚪 Keluar Akun</button>
-          </div>
-          
-          <p class="sub" style="margin-top:20px;font-size:11px">
-            Kode warna nama yang bisa dipakai:<br>
-            #cff1000=Merah · #cff8000=Oranye · #c0aba1d=Hijau · #gamer_123=Pelangi<br>
-            #cffcffcff=Putih · #000000=Hitam · #808080=Abu · #cffcff00=Kuning<br>
-            #a52a2a=Cokelat · #000080=Biru Laut · #f5f5dc=Krem<br>
-            #theredfullmoon=Merah Darah (1x pemakaian) · #BusanaTheHunter=Emas Berkilau (1x/akun)<br>
-            #OGmember=Biru Muda · #trooll=Abu Gelap
-          </p>
-        </section>
-      `;
-      if(d.bgImage)document.getElementById('userBg').value=d.bgImage;
-    });
-  }
-  function getColorDisplay(code){
-    if(code.startsWith('#')){
-      if(colorCodes[code])return colorCodes[code].includes('gradient')?colorCodes[code]:colorCodes[code];
-      return code;
-    }
-    return 'inherit';
-  }
-  window.saveProfile=async function(){
-    const bio=document.getElementById('userBio').value.trim();
-    const bg=document.getElementById('userBg').value.trim();
-    let colorCode='';
-    for(const c in colorCodes){
-      if(bio.includes(c)){colorCode=c;break;}
-    }
-    if(colorCode){
-      const applied=window.KcatHelpers.applyColorCode(colorCode,currentUser.uid);
-      if(!applied&&(colorCode==='#theredfullmoon'||colorCode==='#BusanaTheHunter')){
-        alert('Maaf, kode ini sudah dipakai orang lain!');
-        return;
-      }
-    }
-    await updateDoc(doc(db,'users',currentUser.uid),{
-      bio,bgImage:bg,colorCode,updatedAt:serverTimestamp()
-    });
-    if(bg){
-      localStorage.setItem('bgImage',bg);
-      document.querySelector('.bnr').style.background='url('+bg+') center/cover';
-    }else{
-      localStorage.removeItem('bgImage');
-    }
-    showToast('✅ Profil disimpan!');
-    loadTab('account');
-  };
-  window.doLogout=async function(){
-    if(confirm('Yakin mau keluar?'))await signOut(auth);
-  };
-
-  function renderMusicTab(){
-    main.innerHTML=`
-      <section class="card pn">
-        <h2>🎵 Pemutar Musik</h2>
-        <p class="sub">Masukkan link file MP3 lalu tekan Putar</p>
-        <label>Link MP3:</label>
-        <input type="text" id="mp3Url" placeholder="https://contoh.com/lagu.mp3">
-        <div class="row" style="margin-top:10px">
-          <button id="music-play-btn" onclick="playMusic()" class="grow primary">▶️ Putar</button>
-          <button onclick="stopMusic()" class="danger">⏹️ Stop</button>
-        </div>
-        <p class="sub" style="margin-top:10px">
-          💡 Tips: Upload file mp3 ke GitHub → buka file → salin link "Download file" → tempel di atas
-        </p>
-      </section>
-    `;
-  }
-  window.playMusic
+// === MULAI ===
+muatFirebase();
+</script>
+</body>
+</html>
